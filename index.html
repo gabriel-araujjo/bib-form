@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Formulário de registro de bibliografia</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+    #reference-list>*:hover {
+      background: #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <form>
+        <h1>Formulário de registro de bibliografia</h1>
+
+        <h2>Identificação do artigo</h2>
+
+        <div class="mb-3">
+          <label for="article_author" class="form-label">Autor do artigo</label>
+          <input type="text" id="article_author" class="form-control" name="article_author">
+        </div>
+
+        <div class="mb-3">
+          <label for="article_title" class="form-label">Título do artigo</label>
+          <input type="text" id="article_title" class="form-control" name="article_title">
+        </div>
+
+        <div class="mb-3">
+          <label for="article_subtitle" class="form-label">Subtítulo do artigo</label>
+          <input type="text" id="article_subtitle" class="form-control" name="article_subtitle">
+        </div>
+
+      </form>
+    </div>
+    <div class="row">
+      <h2>Referências do artigo</h2>
+
+      <div id="reference-list" class="col-12"></div>
+
+      <!-- Button to trigger ref insertion dialog -->
+      <div class="col-12 pt-2">
+        <button id="add_ref_btn" type="button" class="btn btn-success me-2" data-bs-toggle="modal"
+          data-bs-target="#ref-form">Adicionar referência</button>
+        <button id="export_btn" type="button" class="btn btn-dark">Exportar</button>
+      </div>
+
+      <template id="ref_entry_template">
+        <div class="row py-1">
+          <div class="col-8">
+            <h5 class="author"></h5>
+            <p class="title mb-0"></p>
+          </div>
+          <div class="col-4 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-primary edit-btn me-2">Editar</button>
+            <button type="button" class="btn btn-danger del-btn">Remover</button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <nav class="">
+
+  </nav>
+
+  <!-- Form to add ref -->
+  <div class="modal fade" id="ref-form" tabindex="-1" aria-labelledby="ref-form-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="ref-form-label">Formulário de referência</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form name="new_ref">
+            <fieldset id="ref-type-radio-group" name="ref_type_radio_group">
+              <legend>Tipo de referência</legend>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="article" name="ref_type" value="article" checked>
+                <label class="form-check-label" for="article">Artigo</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="book" name="ref_type" value="book">
+                <label class="form-check-label" for="book">Livro</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="thesis" name="ref_type" value="thesis">
+                <label class="form-check-label" for="thesis">Tese, dissertação, monografia ou TCC</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="collection" name="ref_type" value="collection">
+                <label class="form-check-label" for="collection">Compilação</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="inbook" name="ref_type" value="inbook">
+                <label class="form-check-label" for="inbook">Capítulo de livro</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="incollection" name="ref_type" value="incollection">
+                <label class="form-check-label" for="incollection">Capítulo de compilação</label>
+              </div>
+
+              <div id="ref-type-desc" class="form-text">
+                Os campos da próxima parte do formulário são modificados conforme o tipo de referência selecionado aqui
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Dados</legend>
+
+              <div id="ref-type-desc" class="form-text">
+                Pode deixar qualquer campo em branco se você não tiver a informação para preencher
+              </div>
+
+              <div id="author-field" class="mb-3 article">
+                <label for="author" class="form-label">Autor</label>
+                <input id="author" class="form-control" type="text" name="author" aria-describedby="author-desc">
+                <div id="author-desc" class="form-text">
+                  Use sempre o formato <strong>Sobrenome, Nome</strong>. Para mais de um altor, separe cada autor com a
+                  palavra <strong>and</strong>. Não use <em>et. al.</em> caso haja muitos altores. Ex. Lago, Pedro
+                  Corrêa do and Lago, Bia Corrêa do.
+                </div>
+              </div>
+
+              <div id="title-field" class="mb-3">
+                <label for="title" class="form-label">Título</label>
+                <input id="title" class="form-control" type="text" name="title" aria-describedby="title-desc">
+                <div id="title-desc" class="form-text">
+                  Se o título for composto, divida-o entre os campos
+                  <strong>Título</strong> e <strong>Subtítulo</strong>
+                </div>
+              </div>
+
+              <div id="subtitle-field" class="mb-3">
+                <label for="subtitle" class="form-label">Subtítulo</label>
+                <input id="subtitle" class="form-control" type="text" name="subtitle" aria-describedby="subtitle-desc">
+                <div id="subtitle-desc" class="form-text">
+                  O subtítulo é a parte do título que vem depois de <strong>:</strong>
+                </div>
+              </div>
+
+              <div id="editor-field" class="mb-3">
+                <label for="editor" class="form-label">Organização</label>
+                <input id="editor" class="form-control" type="text" name="editor" aria-describedby="editor-desc">
+                <div id="editor-desc" class="form-text">
+                  Use o mesmo formato usado no campo <strong>Autor</strong>. Sobrenome antes do nome. Cada pessoa
+                  separada por <strong>and</strong>.
+                </div>
+              </div>
+
+              <div id="booktitle-field" class="mb-3">
+                <label for="booktitle" class="form-label">Título do livro</label>
+                <input id="booktitle" class="form-control" type="text" name="booktitle">
+              </div>
+
+              <div id="booksubtitle-field" class="mb-3">
+                <label for="booksubtitle" class="form-label">Subtítulo do livro</label>
+                <input id="booksubtitle" class="form-control" type="text" name="booksubtitle">
+              </div>
+
+              <div id="type-field" class="mb-3">
+                <label for="type" class="form-label">Tipo</label>
+                <input id="type" class="form-control" type="text" name="type" aria-describedby="type-desc">
+                <div id="type-desc" class="form-text">
+                  Descreva qual o tipo de trabalho no formato <em>Tipo (Curso)</em>. Ex.: Dissertação (Mestrado em
+                  História e Espaços)
+                </div>
+              </div>
+
+              <div id="institution-field" class="mb-3">
+                <label for="institution" class="form-label">Instituição</label>
+                <input id="institution" class="form-control" name="institution" aria-describedby="institution-desc">
+                <div id="institution-desc" class="form-text">
+                  Tente evitar abreviaturas. Escreva, p. ex., <em>Universidade Federal do Rio Grande do Norte</em>.
+                </div>
+              </div>
+
+              <div id="location-field" class="mb-3">
+                <label for="location" class="form-label">Cidade</label>
+                <input id="location" class="form-control" type="text" name="location">
+              </div>
+
+              <div id="journal-field" class="mb-3">
+                <label for="jounal" class="form-label">Periódico</label>
+                <input id="jounal" class="form-control" type="text" name="journal">
+              </div>
+
+              <div id="volume-field" class="mb-3">
+                <label for="volume" class="form-label">Volume</label>
+                <input id="volume" class="form-control" type="text" name="volume" aria-describedby="vol-desc">
+                <div id="vol-desc" class="form-text">Use algorismos arábicos. Ex. 2, e não II</div>
+              </div>
+
+              <div id="number-field" class="mb-3">
+                <label for="number" class="form-label">Número</label>
+                <input id="number" class="form-control" type="text" name="number" aria-describedby="num-desc">
+                <div id="num-desc" class="form-text">Use algorismos arábicos. Ex. 2, e não II</div>
+              </div>
+
+              <div id="publisher-field" class="mb-3">
+                <label for="publisher" class="form-label">Editora</label>
+                <input id="publisher" class="form-control" type="text" name="publisher">
+              </div>
+
+              <div id="year-field" class="mb-3">
+                <label for="year" class="form-label">Ano</label>
+                <input id="year" class="form-control" type="text" name="year" aria-describedby="year-desc">
+                <div id="year-desc" class="form-text">Ponha o ano completo. Ex.: 1970, e não 70</div>
+              </div>
+
+              <div id="pages-field" class="mb-3">
+                <label for="pages" class="form-label">Páginas</label>
+                <input id="pages" class="form-control" type="text" name="pages" aria-describedby="pages-desc">
+                <div id="pages-desc" class="form-text">
+                  Caso a referência tenha mais de uma página separe as páginas inicial e final com "--". Ex. 9--20
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="submit-new-ref">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+  <script>
+    const PUBLISHING_YEAR = "2021";
+    const JOURNAL_NAME = "Revista Galo";
+    const JOURNAL_NUMBER = "4";
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    const allFields = [
+      "author", "title", "subtitle", "editor", "booktitle", "booksubtitle",
+      "type", "institution", "location", "journal", "volume", "number",
+      "publisher", "year", "pages",
+    ];
+
+    const visibleFields = {
+      article: ["author", "title", "subtitle", "location", "journal", "volume", "number", "year", "pages"],
+      book: ["author", "title", "subtitle", "location", "publisher", "year"],
+      thesis: ["author", "title", "subtitle", "type", "institution", "location", "year"],
+      collection: ["editor", "title", "subtitle", "location", "publisher", "year"],
+      inbook: ["author", "title", "subtitle", "booktitle", "booksubtitle", "location", "publisher", "year", "pages"],
+      incollection: ["author", "title", "subtitle", "editor", "booktitle", "booksubtitle", "location", "publisher", "year", "pages"],
+    };
+
+    const makeAllElements = form => {
+      return allFields.map(f => form.elements[f].parentElement);
+    };
+
+    const makeVisibleElementsLookup = form => {
+      const entries = Object.entries(visibleFields)
+        .map(
+          ([type, fields]) => [
+            type,
+            new Set(fields.map(f => form.elements[f].parentElement)),
+          ]
+        );
+
+      return Object.fromEntries(entries);
+    };
+
+    const typeSymbol = Symbol("type");
+    const selfRef = Symbol("selfRef");
+
+    class Ref {
+      constructor(form) {
+        const type = form.ref_type.value;
+
+        for (const field of visibleFields[type]) {
+          const value = (form[field]?.value ?? "").trim();
+
+          if (value) {
+            this[field] = value;
+            if (field === "editor") this.editortype = "organizer";
+          }
+        }
+
+        this[typeSymbol] = type;
+        this[selfRef] = form.selfRef;
+      }
+
+      toString() {
+        const makeId = () => {
+          const authors = (this.author ?? "")
+            .split("and")
+            .map(n => n.split(",")[0].trim())
+            .map(n => n.replace(/\s+/, ""));
+
+          const authorPart = authors.length > 3
+            ? authors[0] + "EtAl"
+            : authors.join("And");
+
+          const titlePart = (this.title ?? "")
+            .split(/\s+/)
+            .map(s => s.trim())
+            .find(s => s.length > 2) ?? "";
+
+          const self = this[selfRef]
+            ? "Self"
+            : "";
+
+          return self + authorPart + (this.year ?? self ? PUBLISHING_YEAR : "") + titlePart;
+        };
+
+        const makeField = (name, value, minLen) => {
+          return `  ${name}`.padEnd(minLen + 3) + "= {" + value + "}";
+        };
+
+        const type = this[typeSymbol];
+
+        // header
+        const header = `@${type}{${makeId()},`;
+
+        // body
+        const maxLen = Object.keys(this).reduce((f, l) => f > l.length ? f : l.length, 0);
+        const body = Object.entries(this)
+          .map(([k, v]) => makeField(k, v, maxLen));
+
+        return `${header}\n${body.join(",\n")}\n}\n`;
+      }
+
+    }
+
+    class NewRefCtrl {
+      constructor(form) {
+        this.form = form;
+        this.allEls = makeAllElements(form);
+        this.visibleElsLookup = makeVisibleElementsLookup(form);
+
+        const ref = form.elements.ref_type;
+        this.select(ref.value);
+
+        form.elements.ref_type_radio_group
+          .addEventListener("change", () => this.select(ref.value));
+      }
+
+      select(type) {
+        const visibleEls = this.visibleElsLookup[type];
+        const hiddenEls = this.allEls.filter(el => !visibleEls.has(el));
+
+        for (const el of visibleEls) el.classList.remove("d-none");
+        for (const el of hiddenEls) el.classList.add("d-none");
+      }
+
+      reference() { return new Ref(this.form.elements); }
+
+      fill(ref) {
+        const formEls = this.form.elements;
+        this.form.reset();
+        formEls.ref_type.value = ref[typeSymbol];
+
+        for (const [k, v] of Object.entries(ref)) {
+          if (k in formEls) formEls[k].value = v;
+        }
+
+        this.select(ref[typeSymbol]);
+      }
+    }
+
+    class RefView {
+      constructor(ref) {
+        const view = refViewTemplate.content.cloneNode(true);
+
+        this._view = view;
+        this._title = view.querySelectorAll(".title")[0];
+        this._author = view.querySelectorAll(".author")[0];
+        this._onEdit = () => { };
+        this._onDelete = () => { };
+
+        const editBtn = view.querySelectorAll(".edit-btn")[0];
+        const removeBtn = view.querySelectorAll(".del-btn")[0];
+
+        editBtn.addEventListener("click", () => this._onEdit(this._ref));
+        removeBtn.addEventListener("click", () => this._onDelete(this._ref));
+
+        this.ref = ref;
+      }
+
+      set ref(ref) {
+        this._ref = ref;
+
+        this._title.textContent = ref.title ?? "[sem título]";
+        this._author.textContent = ref.author ?? ref.editor ?? "[sem autor]";
+      }
+
+      get ref() { return this._ref; }
+
+      onEdit(cb) { this._onEdit = cb; }
+      onDelete(cb) { this._onDelete = cb; }
+
+      appendTo(el) {
+        el.appendChild(this._view);
+        const view = el.lastElementChild;
+        view.refView = this;
+        this._view = view;
+      }
+
+      get view() { return this._view; }
+    }
+
+    class BibRef {
+      constructor({ author, title, subtitle, refs }) {
+        this._author = (author ?? "").trim();
+        this._title = (title ?? "").trim();
+        this._subtitle = (subtitle ?? "").trim();
+        this._refs = refs ?? [];
+        this._cbs = new Set();
+      }
+
+      get author() { return this._author; }
+      get title() { return this._title; }
+      get subtitle() { return this._subtitle; }
+      get refs() { return this._refs; }
+
+      set author(author) {
+        this._author = (author ?? "").trim();
+      }
+
+      set title(title) {
+        this._title = (title ?? "").trim();
+      }
+
+      set subtitle(subtitle) {
+        this._subtitle = subtitle;
+      }
+
+      addRef(ref) {
+        if (!this._refs.includes(ref)) {
+          this._refs.push(ref);
+          this.notifyUpdate("add", { neo: ref });
+        }
+      }
+
+      deleteRef(ref) {
+        const index = this._refs.indexOf(ref);
+
+        if (index > -1) {
+          this._refs.splice(index, 1);
+          this.notifyUpdate("delete", { old: ref });
+        }
+      }
+
+      replaceRef(old, neo) {
+        if (old === neo) return;
+        const index = this._refs.indexOf(old);
+        if (index > -1) {
+          this._refs[index] = neo;
+          this.notifyUpdate("replace", { old, neo });
+        }
+      }
+
+      onUpdate(cb) { this._cbs.add(cb); }
+      notifyUpdate(event, data) { for (const cb of this._cbs) cb(this, event, data); }
+    }
+
+    const addRefBtn = document.getElementById("add_ref_btn");
+    const refSubmit = document.getElementById("submit-new-ref");
+    const authorField = document.getElementById("article_author");
+    const titleField = document.getElementById("article_title");
+    const subtitleField = document.getElementById("article_subtitle");
+    const refViewTemplate = document.getElementById("ref_entry_template");
+    const referenceList = document.getElementById("reference-list");
+    const exportBtn = document.getElementById("export_btn");
+
+    const refCtrl = new NewRefCtrl(document.new_ref);
+    const bibRef = new BibRef({
+      author: authorField.value,
+      title: titleField.value,
+    });
+
+    let app = {};
+
+    addRefBtn.addEventListener("click", () => {
+      refCtrl.fill(new Ref({ ref_type: { value: "article" } }));
+      app.refSubmitAction = () => bibRef.addRef(refCtrl.reference());
+    });
+    refSubmit.addEventListener("click", () => app.refSubmitAction());
+    authorField.addEventListener("input", () => bibRef.author = authorField.value);
+    titleField.addEventListener("input", () => bibRef.title = titleField.value);
+    subtitleField.addEventListener("input", () => bibRef.subtitle = subtitleField.value);
+    exportBtn.addEventListener("click", exportFile);
+
+    bibRef.onUpdate((bib, event, data) => {
+      const refViews = referenceList.children;
+      switch (event) {
+        case "add": {
+          const refView = new RefView(data.neo);
+          refView.onEdit(ref => {
+            refCtrl.fill(ref);
+            app.refSubmitAction = () => bibRef.replaceRef(ref, refCtrl.reference());
+            $("#ref-form").modal("show");
+          });
+          refView.onDelete(ref => bibRef.deleteRef(ref));
+          refView.appendTo(referenceList);
+        } break;
+        case "remove":
+          referenceList.removeChild(findRefView(data.old));
+          break;
+        case "replace":
+          findRefView(data.old).refView.ref = data.neo;
+          break;
+      }
+    });
+
+    function findRefView(ref) {
+      for (const el of referenceList.children) {
+        if (el.refView?.ref === ref) return el;
+      }
+    }
+
+    const download = (() => {
+      const fakeDownload = document.createElement("a");
+      document.body.appendChild(fakeDownload);
+      fakeDownload.style = "display: none";
+
+      return data => {
+        const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+        const url = window.URL.createObjectURL(blob);
+
+        fakeDownload.href = url;
+        fakeDownload.download = "references.bib";
+        fakeDownload.click();
+        window.URL.revokeObjectURL(url);
+      };
+    })();
+
+    function exportFile() {
+      const selfRef = new Ref({
+        ref_type: { value: "article" },
+        author: { value: bibRef.author },
+        title: { value: bibRef.title },
+        subtitle: { value: bibRef.subtitle },
+        journal: { value: JOURNAL_NAME },
+        number: { value: JOURNAL_NUMBER },
+        selfRef: true,
+      });
+
+      const data = `%% ${bibRef.title}
+
+%%%% self-reference
+${selfRef}
+
+%%%% references
+
+${bibRef.refs.join("\n")}
+`;
+      download(data);
+    }
+  </script>
+</body>
+
+</html>
